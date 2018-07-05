@@ -1,5 +1,8 @@
 # Use AlpineLinux as base image
-FROM alpine:3.5
+FROM hardware/nsd-dnssec
+
+# Fixup Alpine community repository
+RUN sed -i 's/nl.alpinelinux.org/nl3.alpinelinux.org/g' /etc/apk/repositories
 
 # Install Git
 RUN apk update && apk upgrade && \
