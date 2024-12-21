@@ -2,17 +2,20 @@
 FROM alpine:3.20
 
 # Install Git
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+RUN apk add --no-cache bash git openssh
 
 # Install Supervisor
 RUN apk add --no-cache \
     supervisor
 
 # Install Python and needed python modules
-RUN apk add --update \
+RUN apk add --no-cache \
     python3 \
     py3-requests
+
+# Install NSD
+RUN apk add --no-cache \
+    nsd
 
 # Copy supervisor config
 COPY conf/supervisord.conf /etc/supervisord.conf
