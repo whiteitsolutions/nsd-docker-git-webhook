@@ -1,7 +1,10 @@
 # docker-git-webhook
 :whale: Pull your Git code into a data volume ready to use in other containers. Provides a webhook, so that you can get new code pulled in automatically.
 
-##### [Docker hub image: eduwass/docker-git-webhook](https://hub.docker.com/r/eduwass/docker-git-webhook/)
+
+## Upstream
+- Original Docker image is from https://github.com/eduwass/docker-git-webhook
+- Original docker-hook script is from https://github.com/schickling/docker-hook
 
 ### Available Configuration Parameters
 
@@ -19,7 +22,7 @@ The following flags are a list of all the currently supported options that can b
  - **AFTER_PUSH_COMMANDS** : Add any commands that will be run after push
  - **BEFORE_PULL_COMMANDS** : Add any commands that will be run before pull
  - **BEFORE_PUSH_COMMANDS** : Add any commands that will be run before push
- 
+
 ### Available Locations to add Custom Scripts
 
 Mount any .sh scripts you have to this location in the container so that they get executed on the corresponding step:
@@ -30,3 +33,16 @@ Mount any .sh scripts you have to this location in the container so that they ge
   - **/custom_scripts/before_push**
   - **/custom_scripts/on_startup**
 
+### Testing
+
+To test an an endpoint, you can run the following CURL command, and if it's successful you should get a 200 response with an empty body.
+```console
+curl --head -X POST yourdomain.com:8555/$GIT_HOOK_TOKEN
+```
+
+Example response:
+```
+HTTP/2 200
+date: Sat, 21 Dec 2024 03:54:10 GMT
+server: BaseHTTP/0.6 Python/3.12.8
+```
