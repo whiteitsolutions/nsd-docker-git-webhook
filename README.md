@@ -46,3 +46,9 @@ HTTP/2 200
 date: Sat, 21 Dec 2024 03:54:10 GMT
 server: BaseHTTP/0.6 Python/3.12.8
 ```
+
+## Example usage to restart NSD in a docker container
+
+Assuming you have a docker container named `nsd` running the `ghcr.io/whiteitsolutions/docker-nsd:master` image, on a network that this `nsd-docker-git-webhook` container is also on. You can setup a `AFTER_PULL_COMMANDS` like `nsd-control -s $$(getent hosts nsd|awk '{ print $$1 }') reconfig; nsd-control -s $$(getent hosts nsd|awk '{ print $$1 }') reload` to trigger NSD to reload it's config on a pull request.
+
+Simple example in `docker-compose.yml`

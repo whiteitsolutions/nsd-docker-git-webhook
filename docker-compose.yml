@@ -1,0 +1,49 @@
+services:
+  nsd:
+    image: ghcr.io/whiteitsolutions/docker-nsd:master
+    restart: always
+    container_name: nsd
+    ports:
+      - "53:53"
+      - "53:53/udp"
+    volumes:
+      - ./conf:/etc/nsd
+      - ./zones:/zones
+      - ./db:/var/db/nsd
+    networks:
+      - nsdcontrol
+
+  web:
+    image: ghcr.io/whiteitsolutions/nsd-docker-git-webhook:master
+    restart: always
+    volumes:
+      - ./:/code
+      - ./conf:/etc/nsd:ro
+      - ./logs:/var/log
+    networks:
+      - web
+      - nsdcontrol
+    labels:
+      - "traefik.frontend.rule=Host:${HOOK_DOMAIN}"
+      - "traefik.port=8555"
+      - "whiteitsolutions.type=githook-web"
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.http.services.githook-web-dns.loadbalancer.server.port=8555"
+      - "traefik.http.routers.githook-web-dns.rule=Host(`${HOOK_DOMAIN}`)"
+      - "traefik.http.routers.githook-web-dns.entrypoints=websecure"
+      - "traefik.http.routers.githook-web-dns.tls=true"
+      - "traefik.http.routers.githook-web-dns.tls.certresolver=default"
+
+    environment:
+      GIT_REPO: ${GIT_REPO}
+      GIT_HOOK_TOKEN: ${GIT_HOOK_TOKEN}
+      GIT_EMAIL: ${GIT_EMAIL}
+      GIT_NAME: Docker Git Webhook
+      AFTER_PULL_COMMANDS: nsd-control -s $$(getent hosts nsd|awk '{ print $$1 }') reconfig; nsd-control -s $$(getent hosts nsd|awk '{ print $$1 }') reload
+
+networks:
+  web:
+    external: true
+  nsdcontrol:
+    driver: bridge
