@@ -7,14 +7,8 @@ import json
 import os
 from subprocess import Popen
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-try:
-    # For Python 3.0 and later
-    from http.server import HTTPServer
-    from http.server import BaseHTTPRequestHandler
-except ImportError:
-    # Fall back to Python 2
-    from BaseHTTPServer import BaseHTTPRequestHandler
-    from BaseHTTPServer import HTTPServer as HTTPServer
+from http.server import HTTPServer
+from http.server import BaseHTTPRequestHandler
 import sys
 import logging
 import requests
@@ -28,7 +22,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
     def do_POST(self):
         logging.info("Path: %s", self.path)
-        header_length = int(self.headers.getheader('content-length', "0"))
+        header_length = int(self.headers.get('content-length', "0"))
         json_payload = self.rfile.read(header_length)
         env = dict(os.environ)
         json_params = {}
