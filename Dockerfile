@@ -1,5 +1,5 @@
 # Use AlpineLinux as base image
-FROM alpine:3.14
+FROM alpine:3.20
 
 # Install Git
 RUN apk update && apk upgrade && \
@@ -9,13 +9,10 @@ RUN apk update && apk upgrade && \
 RUN apk add --no-cache \
     supervisor
 
-# Install Python and needed pip modules
+# Install Python and needed python modules
 RUN apk add --update \
     python3 \
-    python3-dev \
-    py3-pip \
-    build-base \
-  && pip install requests
+    py3-requests 
 
 # Copy supervisor config
 ADD conf/supervisord.conf /etc/supervisord.conf
